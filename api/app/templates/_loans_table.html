@@ -1,0 +1,16 @@
+<table>
+  <tr><th>№</th><th>Книга</th><th>Экземпляр</th><th>Читатель</th><th>Выдана</th><th>Срок</th><th>Возвращена</th><th>Просрочка</th><th>Штраф, ₽</th></tr>
+  {% for loan in loans %}
+  <tr class="{{ loan.status }}">
+    <td><a href="/loans/{{ loan.id }}">{{ loan.id }}</a></td>
+    <td><a href="/books/{{ loan.book.id }}">{{ loan.book.title }}</a></td>
+    <td>{{ loan.copy.inventory_no }}</td>
+    <td><a href="/readers/{{ loan.reader.id }}">{{ loan.reader.full_name }}</a></td>
+    <td>{{ loan.issued_on }}</td>
+    <td>{{ loan.due_on }}</td>
+    <td>{{ loan.returned_on or '—' }}</td>
+    <td>{{ loan.overdue_days or '' }}</td>
+    <td>{{ loan.fine or '' }}</td>
+  </tr>
+  {% endfor %}
+</table>

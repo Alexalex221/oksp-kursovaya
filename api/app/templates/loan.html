@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Выдача {{ loan.id }}{% endblock %}
+{% block content %}
+<h1>Выдача № {{ loan.id }}</h1>
+<table>
+  <tr><th>Книга</th><td><a href="/books/{{ loan.book.id }}">{{ loan.book.title }}</a>, {{ loan.book.author }}</td></tr>
+  <tr><th>Экземпляр</th><td>{{ loan.copy.inventory_no }}</td></tr>
+  <tr><th>Читатель</th><td><a href="/readers/{{ loan.reader.id }}">{{ loan.reader.full_name }}</a></td></tr>
+  <tr><th>Выдана</th><td>{{ loan.issued_on }}</td></tr>
+  <tr><th>Срок возврата</th><td>{{ loan.due_on }}</td></tr>
+  <tr><th>Возвращена</th><td>{{ loan.returned_on or 'на руках' }}</td></tr>
+  <tr><th>Просрочка, дней</th><td class="{{ 'overdue' if loan.overdue_days else '' }}">{{ loan.overdue_days }}</td></tr>
+  <tr><th>Штраф, ₽</th><td class="{{ 'overdue' if loan.fine else '' }}">{{ loan.fine }}</td></tr>
+</table>
+{% if not loan.returned_on %}
+<form class="action" method="post" action="/loans/{{ loan.id }}/return">
+  <strong>Принять возврат</strong>
+  <label>дата <input type="date" name="returned_on" value="{{ today }}"></label>
+  <button>Принять</button>
+</form>
+{% endif %}
+{% endblock %}

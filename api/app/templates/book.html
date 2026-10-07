@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<h1>{{ book.title }}</h1>
+<p>{{ book.author }} · {{ book.genre }} · {{ book.published_year }} · ISBN {{ book.isbn }}</p>
+<p>Выдач за всё время: <b>{{ book.loans_total }}</b> · <a href="/loans?book_id={{ book.id }}">все выдачи книги</a></p>
+<h2>Экземпляры</h2>
+<table>
+  <tr><th>№</th><th>Инв. номер</th><th>Полка</th><th>Состояние</th><th></th></tr>
+  {% for c in book.copies %}
+  <tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.inventory_no }}</td>
+    <td>{{ c.shelf }}</td>
+    {% if c.loan %}
+    <td>у читателя <a href="/readers/{{ c.loan.reader.id }}">{{ c.loan.reader.full_name }}</a> до {{ c.loan.due_on }}</td>
+    <td><a href="/loans/{{ c.loan.id }}">выдача № {{ c.loan.id }}</a></td>
+    {% else %}
+    <td>свободен</td>
+    <td>
+      <form class="inline" method="post" action="/loans/issue">
+        <input type="hidden" name="copy_id" value="{{ c.id }}">
+        читатель № <input name="reader_id" size="6"> <button>Выдать</button>
+      </form>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

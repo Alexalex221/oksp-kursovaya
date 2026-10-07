@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ reader.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ reader.full_name }}</h1>
+<p>Читатель № {{ reader.id }} · {{ reader.email }} · {{ reader.phone }} · записан {{ reader.registered_on }}</p>
+<p class="stats">
+  <span>Выдач всего: <b>{{ reader.stats.loans_total }}</b></span>
+  <span>На руках: <b>{{ reader.stats.on_hands }}</b></span>
+  <span class="{{ 'overdue' if reader.stats.overdue else '' }}">Просрочено: <b>{{ reader.stats.overdue }}</b></span>
+  <span>Штрафов начислено: <b>{{ reader.stats.fines_total }} ₽</b></span>
+</p>
+{% if reader.stats.overdue %}<p class="overdue">Новые выдачи запрещены, пока не возвращены просроченные книги.</p>{% endif %}
+<h2>Выдачи</h2>
+{% set loans = reader.loans %}
+{% include "_loans_table.html" %}
+{% endblock %}

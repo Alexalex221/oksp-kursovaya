@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Выдачи{% endblock %}
+{% block content %}
+<h1>Выдачи</h1>
+<form class="filters" method="get" action="/loans">
+  <label>Состояние
+    <select name="status">
+      <option value="">все</option>
+      {% for value, label in [("active", "на руках"), ("overdue", "просрочены"), ("returned", "возвращены")] %}
+      <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Читатель № <input name="reader_id" size="6" value="{{ reader_id or '' }}"></label>
+  <label>Книга № <input name="book_id" size="6" value="{{ book_id or '' }}"></label>
+  <button>Показать</button>
+</form>
+<form class="action" method="post" action="/loans/issue">
+  <strong>Новая выдача:</strong>
+  <label>экземпляр № <input name="copy_id" size="6"></label>
+  <label>читатель № <input name="reader_id" size="6"></label>
+  <button>Выдать</button>
+</form>
+{% set loans = data["items"] %}
+{% include "_loans_table.html" %}
+{% include "_pager.html" %}
+{% endblock %}

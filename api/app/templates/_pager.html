@@ -1,0 +1,6 @@
+{% set pages = ((data.total + data.size - 1) // data.size) or 1 %}
+<div class="pager">
+  {% if data.page > 1 %}<a href="?{{ query }}&page={{ data.page - 1 }}">← назад</a>{% endif %}
+  <span>страница {{ data.page }} из {{ pages }}, всего {{ data.total }}</span>
+  {% if data.page < pages %}<a href="?{{ query }}&page={{ data.page + 1 }}">вперёд →</a>{% endif %}
+</div>

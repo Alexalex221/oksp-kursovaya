@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Читатели{% endblock %}
+{% block content %}
+<h1>Читатели</h1>
+<form class="filters" method="get" action="/readers">
+  <label>ФИО содержит <input name="q" value="{{ q or '' }}"></label>
+  <button>Найти</button>
+</form>
+<table>
+  <tr><th>№</th><th>ФИО</th><th>Почта</th><th>Телефон</th><th>Записан</th></tr>
+  {% for r in data["items"] %}
+  <tr>
+    <td>{{ r.id }}</td>
+    <td><a href="/readers/{{ r.id }}">{{ r.full_name }}</a></td>
+    <td>{{ r.email }}</td>
+    <td>{{ r.phone }}</td>
+    <td>{{ r.registered_on }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% include "_pager.html" %}
+{% endblock %}
