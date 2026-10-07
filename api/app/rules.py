@@ -42,9 +42,11 @@ def check_issue(copy_on_loan: bool, reader_overdue_loans: int) -> None:
         raise RuleViolation(f"у читателя просроченных выдач: {reader_overdue_loans}")
 
 
-def check_return(issued_on: date, returned_on: date | None, return_date: date) -> None:
-    """Возврат принимается один раз и не раньше даты выдачи."""
+def check_return(issued_on: date, returned_on: date | None, return_date: date, today: date) -> None:
+    """Возврат принимается один раз, не раньше даты выдачи и не позже сегодняшнего дня."""
     if returned_on is not None:
         raise RuleViolation("выдача уже закрыта")
     if return_date < issued_on:
         raise RuleViolation("дата возврата раньше даты выдачи")
+    if return_date > today:
+        raise RuleViolation("дата возврата ещё не наступила")
