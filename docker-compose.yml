@@ -1,0 +1,41 @@
+name: ${PREFIX:-aleksandr_alekseenko}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-library}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${PREFIX:-aleksandr_alekseenko}
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c work_mem=16MB
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+    ports:
+      - "${DB_PORT:-55432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-library}:${POSTGRES_PASSWORD:-changeme}@db:5432/${PREFIX:-aleksandr_alekseenko}
+      DB_SCHEMA: ${PREFIX:-aleksandr_alekseenko}
+      SECRET_KEY: ${SECRET_KEY:-changeme}
+    ports:
+      - "${APP_PORT:-8081}:8000"
+    volumes:
+      - ./api:/srv
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:
