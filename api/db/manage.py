@@ -1,6 +1,8 @@
 """Обслуживание базы данных.
 
     python db/manage.py schema        создать схему и таблицы
+    python db/manage.py seed small    малое наполнение (сотни выдач)
+    python db/manage.py seed work     рабочее наполнение (100 000 выдач)
     python db/manage.py counts        число записей по таблицам
 """
 
@@ -14,6 +16,7 @@ import asyncpg
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.config import settings  # noqa: E402
+from db import seed  # noqa: E402
 
 TABLES = ["accounts", "readers", "books", "copies", "loans"]
 
@@ -47,6 +50,10 @@ async def main(argv: list[str]) -> None:
         if argv[0] == "schema":
             await apply_schema(conn)
             print(f"схема {schema_name()} готова")
+        elif argv[0] == "seed" and len(argv) == 2 and argv[1] in seed.SIZES:
+            await seed.load(conn, argv[1])
+            for table, n in (await counts(conn)).items():
+                print(f"{table:<10}{n:>10}")
         elif argv[0] == "counts":
             for table, n in (await counts(conn)).items():
                 print(f"{table:<10}{n:>10}")
