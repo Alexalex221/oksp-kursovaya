@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
@@ -5,10 +7,18 @@ from starlette.middleware.sessions import SessionMiddleware
 from app import api, pages
 from app.auth import LoginRequired
 from app.config import settings
+from app.db import engine
 from app.rules import RuleViolation
 from app.services import NotFound
 
-app = FastAPI(title="Библиотека: выдача книг")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await engine.dispose()
+
+
+app = FastAPI(title="Библиотека: выдача книг", lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, session_cookie="library_session")
 app.include_router(api.router)
 app.include_router(pages.router)
