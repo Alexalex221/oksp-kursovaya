@@ -4,7 +4,7 @@
 <h1>Выдача № {{ loan.id }}</h1>
 <table>
   <tr><th>Книга</th><td><a href="/books/{{ loan.book.id }}">{{ loan.book.title }}</a>, {{ loan.book.author }}</td></tr>
-  <tr><th>Экземпляр</th><td>{{ loan.copy.inventory_no }}</td></tr>
+  <tr><th>Экземпляр</th><td>{{ loan['copy'].inventory_no }}</td></tr>
   <tr><th>Читатель</th><td><a href="/readers/{{ loan.reader.id }}">{{ loan.reader.full_name }}</a></td></tr>
   <tr><th>Выдана</th><td>{{ loan.issued_on }}</td></tr>
   <tr><th>Срок возврата</th><td>{{ loan.due_on }}</td></tr>

@@ -4,7 +4,7 @@
   <tr class="{{ loan.status }}">
     <td><a href="/loans/{{ loan.id }}">{{ loan.id }}</a></td>
     <td><a href="/books/{{ loan.book.id }}">{{ loan.book.title }}</a></td>
-    <td>{{ loan.copy.inventory_no }}</td>
+    <td>{{ loan['copy'].inventory_no }}</td>
     <td><a href="/readers/{{ loan.reader.id }}">{{ loan.reader.full_name }}</a></td>
     <td>{{ loan.issued_on }}</td>
     <td>{{ loan.due_on }}</td>
