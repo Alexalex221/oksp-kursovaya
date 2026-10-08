@@ -37,5 +37,15 @@ services:
       db:
         condition: service_healthy
 
+  # Нагрузочные тесты: одноразовый контейнер, запускается по требованию
+  # (docker compose run --rm k6 run /load/tests/...), в той же сети, что и сервис.
+  k6:
+    image: grafana/k6:0.55.0
+    profiles: ["load"]
+    volumes:
+      - ./load:/load
+    depends_on:
+      - api
+
 volumes:
   db-data:
