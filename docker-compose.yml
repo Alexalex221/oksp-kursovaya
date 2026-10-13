@@ -31,6 +31,9 @@ services:
       SECRET_KEY: ${SECRET_KEY:-changeme}
     ports:
       - "${APP_PORT:-8081}:8000"
+    # py-spy подключается к процессу сервиса снаружи: нужно право ptrace
+    cap_add:
+      - SYS_PTRACE
     volumes:
       - ./api:/srv
     depends_on:
