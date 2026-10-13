@@ -68,6 +68,29 @@
 Тесты операций создают и наполняют собственную схему `<PREFIX>_test`, рабочие
 данные не затрагиваются.
 
+## Нагрузочные тесты
+
+Тесты k6 лежат в `load/` и запускаются одноразовым контейнером в сети стенда.
+Профиль нагрузки — смена библиотекаря: журнал выдач, поиск и карточки книг и
+читателей, сводка, выдача с возвратом; доли действий заданы в
+`load/scenarios/profile.js`. Испытание проводится на рабочем наполнении.
+
+    # проверочный прогон: каждое действие профиля один раз
+    docker compose run --rm k6 run /load/tests/smoke.test.js
+    # одна ступень открытой нагрузки: RATE действий в секунду
+    docker compose run --rm k6 run -e RATE=100 -e DURATION=30s /load/tests/open-step.test.js
+    # разгон пятью ступенями от START_RATE до PEAK_RATE
+    docker compose run --rm k6 run -e START_RATE=5 -e PEAK_RATE=80 /load/tests/ramp.test.js
+
+Критерий — p95 действий профиля меньше `LIMIT_MS` (500 мс) и меньше 1 % ошибок;
+`-e EXCLUDE=loans,loans_filter` убирает действия из смеси. Действие «выдача и
+возврат» добавляет в базу закрытые выдачи, поэтому перед каждой ступенью база
+наполняется заново (`python db/manage.py seed work`).
+
+Профиль сервиса под нагрузкой снимается py-spy, он установлен в образе:
+
+    docker compose exec api py-spy record --pid 1 --duration 10 --nonblocking --function --output /tmp/profile.svg
+
 ## Программный интерфейс
 
 Все операции, кроме входа, требуют сеансовой куки `library_session`, без неё
